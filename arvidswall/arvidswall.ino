@@ -1,17 +1,3 @@
-/*Att göra: 
-checked 1. När man slår ifrån switchen så slocknar inte första LED. 
-checked 2. Vid nytt spel måste man börja med senaste aktiva knapp
-checked 3. Vid nytt spel börjar man med senaste pitch vid sista knappen. 
-4. Vill ha ett tickande ljud som är snabbare och snabbare under de aktiva sekundrarna under 
-spelets gång. 
-5. Alla lampor ska slockna när man slår av switch
-6. switch får inte over rule ljussensor  
-checked 7. Alla LED ska vara tända under ett aktivt spel. 
-
-Jag har hittat att pin 12 är kopplad till mikrofonchippet. 
-Sen har jag hittat nåt som ser ut som en andra, större piezo kopplad till A0 via resistor till ground. 
-*/
-
 #include "pitches.h"  // Include the pitches library
 #include <EEPROM.h>   // Include the EEPROM library
 
