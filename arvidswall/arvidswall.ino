@@ -39,11 +39,11 @@ const uint8_t godJulText[] = {
 };
 
 const uint8_t getReadyText[] = {
-  0x00, 0x00, 0x00, 0x00,          // Mellanslag innan
+  0x00, 0x00, 0x00, 0x00,          // Space before
   0x3d, 0x79, 0x07,                // G E T
-  0x00,                            // Mellanslag
-  0x50, 0x79, 0x77, 0x5e, 0x6e,    // R E A D Y (Y ser ut som ett vinklat u/v)
-  0x00, 0x00, 0x00, 0x00           // Mellanslag efter
+  0x00,                            // space
+  0x50, 0x79, 0x77, 0x5e, 0x6e,    // R E A D Y 
+  0x00, 0x00, 0x00, 0x00           // Space after
 };
 
 const uint8_t gameOverText[] = {
@@ -95,20 +95,18 @@ int currentStreak = 0;
 bool melodyPlayed = false;
 bool victoriousMelodyPlayed = false;
 
-// Variabler för 4-sekunders tryck
+// Variables 4-seconds press
 unsigned long whiteButtonPressStart = 0;
 bool isPressingWhite = false;
 
-// Variabler för blå knapp (Interstellar)
+// Variables for blue button (Interstellar)
 unsigned long blueButtonPressStart = 0;
 bool isPressingBlue = false;
 
-// Interstellar-melodin
-// Den klättrande slingan
-// De exakta arpeggio-figurerna från din notbild
-// 192 toner baserade på 16 takter á 12 noter
+// Interstellar-melody
+// 192 notes, 16 measures á 12 notes
 const uint16_t interstellarMelody[] = {
-  // 192 sextondelar (16 takter á 12 noter)
+
   NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_E5, NOTE_D5, NOTE_E5, NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, 
   NOTE_D5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_G5, NOTE_F5, NOTE_E5, NOTE_F5, NOTE_G5, NOTE_A5, NOTE_B5, 
   NOTE_C6, NOTE_B5, NOTE_A5, NOTE_B5, NOTE_G5, NOTE_A5, NOTE_B5, NOTE_E5, NOTE_B5, NOTE_G5, NOTE_A5, NOTE_G5, 
