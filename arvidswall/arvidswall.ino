@@ -1,8 +1,12 @@
 /*Todo: 
-Put Harry Potter Melody on blue button. 
-HP only plays while button is held down. 
+ändra så att när coin toss hörs så kommer samma knapp lysas upp och så kommer ljudet repeteras och att lampan blinkar ett slumpmässigt
+antal mellan 4 och 10. 
 
-Implement difficulty levels. 
+ändra så att man får tre liv. För varje liv man tappar så hörs ett negativt laddat ljud. Men när man når jämna 50, 100, och sedan jämna 
+hundratal så får man en one-up och det ljudet hörs. Det supermarioljud som är kvar låter vid vart femte poäng.   
+
+
+Implement difficulty levels: 
 
 Håll nere knappen i 3 sekunder
 Alla tre knappar börjar blinka pulserande, en svårighet väljs per knapp - NOOB, HARD, HACKER. Tryck på en knapp och då är det den som gäller fram till att man håller nere knappen 
