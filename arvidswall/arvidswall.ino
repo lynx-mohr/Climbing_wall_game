@@ -71,6 +71,10 @@ bool isPressingWhite = false;
 unsigned long blueButtonPressStart = 0;
 bool isPressingBlue = false;
 
+// Variabler för röd knapp (Harry Potter)
+unsigned long redButtonPressStart = 0;
+bool isPressingRed = false;
+
 // Musik-inställningar
 int tempo = 240;
 int wholenote = (60000 * 4) / tempo;
@@ -92,6 +96,40 @@ const uint8_t gameOverText[] = {
   0x00, 0x00, 0x00, 0x00, 0x00 // Extra tomma steg för utrullning
 };
 
+// Nya läsvänliga Harry Potter texter
+const uint8_t hpTexts[] = {
+  0x00,0x00,0x00,0x00, // Start
+  // 1. HARRY POTTER IS HERE
+  0x76, 0x77, 0x50, 0x50, 0x6e, 0x00, 0x73, 0x5c, 0x07, 0x07, 0x79, 0x50, 0x00, 0x04, 0x6d, 0x00, 0x76, 0x79, 0x50, 0x79,
+  0x00,0x00,0x00,0x00,
+  // 2. RON LIKES PIE
+  0x50, 0x5c, 0x54, 0x00, 0x38, 0x04, 0x70, 0x79, 0x6d, 0x00, 0x73, 0x04, 0x79,
+  0x00,0x00,0x00,0x00,
+  // 3. SEE THE GOLD SNITCH
+  0x6d, 0x79, 0x79, 0x00, 0x07, 0x76, 0x79, 0x00, 0x3d, 0x5c, 0x38, 0x5e, 0x00, 0x6d, 0x54, 0x04, 0x07, 0x39, 0x76,
+  0x00,0x00,0x00,0x00,
+  // 4. DO NOT GO TO SLEEP
+  0x5e, 0x5c, 0x00, 0x54, 0x5c, 0x07, 0x00, 0x3d, 0x5c, 0x00, 0x07, 0x5c, 0x00, 0x6d, 0x38, 0x79, 0x79, 0x73,
+  0x00,0x00,0x00,0x00,
+  // 5. PURE MAGIC (M=n, G=6)
+  0x73, 0x1c, 0x50, 0x79, 0x00, 0x54, 0x77, 0x3d, 0x04, 0x39,
+  0x00,0x00,0x00,0x00,
+  // 6. THE DARK LORD
+  0x07, 0x76, 0x79, 0x00, 0x5e, 0x77, 0x50, 0x70, 0x00, 0x38, 0x5c, 0x50, 0x5e,
+  0x00,0x00,0x00,0x00,
+  // 7. LOVIS IS A HERO
+  0x38, 0x5c, 0x1c, 0x04, 0x6d, 0x00, 0x04, 0x6d, 0x00, 0x77, 0x00, 0x76, 0x79, 0x50, 0x5c,
+  0x00,0x00,0x00,0x00,
+  // 8. ARVID IS A HERO
+  0x77, 0x50, 0x1c, 0x04, 0x5e, 0x00, 0x04, 0x6d, 0x00, 0x77, 0x00, 0x76, 0x79, 0x50, 0x5c,
+  0x00,0x00,0x00,0x00,
+  // 9. HOGUARTS IS BEST (U istället för W)
+  0x76, 0x5c, 0x3d, 0x1c, 0x77, 0x50, 0x07, 0x6d, 0x00, 0x04, 0x6d, 0x00, 0x7c, 0x79, 0x6d, 0x07,
+  0x00,0x00,0x00,0x00, 0x00, 0x00 // Slut
+};
+
+// Uppdaterade startpositioner för de nya meningarna
+int sentenceStarts[] = {0, 4, 25, 42, 65, 87, 101, 118, 137, 157};
 
 // --- MELODIER ---
 int jingleMelody[] = { NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_G5, NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_D5, NOTE_D5, NOTE_E5, NOTE_D5, NOTE_G5 };
@@ -182,6 +220,32 @@ void loop() {
       if (elapsed > 4000) { runInterstellarMode(); isPressingBlue = false; blueButtonPressStart = 0; }
     } else {
       if (isPressingBlue) { isPressingBlue = false; blueButtonPressStart = 0; display.showNumberDec(highScore); }
+    }
+
+   // --- HANTERING AV RÖD KNAPP (Index 0, Pin 4) - HARRY POTTER ---
+    if (digitalRead(buttonPins[0]) == LOW) {
+      if (!isPressingRed) {
+        redButtonPressStart = millis();
+        isPressingRed = true;
+      } 
+      unsigned long elapsed = millis() - redButtonPressStart;
+
+      if (elapsed > 3000) display.showNumberDec(1);
+      else if (elapsed > 2000) display.showNumberDec(2);
+      else if (elapsed > 1000) display.showNumberDec(3);
+
+      if (elapsed > 4000) {
+        runHarryPotterMode(); 
+        // Återställ dessa efter att funktionen körts klart
+        isPressingRed = false; 
+        redButtonPressStart = 0;
+      }
+    } else {
+      if (isPressingRed) {
+        isPressingRed = false;
+        redButtonPressStart = 0;
+        display.showNumberDec(highScore);
+      }
     }
 
     // Vit knapp (Spel eller Jul)
@@ -318,7 +382,15 @@ void playFireBallSound() {
   tone(piezoPin, NOTE_G4, 35); delay(35);
   tone(piezoPin, NOTE_G5, 35); delay(35);
   tone(piezoPin, NOTE_G6, 35); delay(35);
-  noTone(piezoPin); delay(200);
+  noTone(piezoPin); delay(100);
+  tone(piezoPin, NOTE_G4, 35); delay(35);
+  tone(piezoPin, NOTE_G5, 35); delay(35);
+  tone(piezoPin, NOTE_G6, 35); delay(35);
+  noTone(piezoPin); delay(100);
+  tone(piezoPin, NOTE_G4, 35); delay(35);
+  tone(piezoPin, NOTE_G5, 35); delay(35);
+  tone(piezoPin, NOTE_G6, 35); delay(35);
+  noTone(piezoPin); delay(100);
   for (int i = 0; i < 8; i++) digitalWrite(ledEightArray[i], LOW);
 }
 
@@ -425,4 +497,89 @@ void potentiometerMusic(){
   int f = map(p, 0, 1023, 500, 1000);
   for (int i = 0; i < 11; i++) digitalWrite(ledAllArray[i], i < m ? HIGH : LOW);
   tone(piezoPin, f, 100);
+}
+
+void runHarryPotterMode() {
+  display.clear();
+  
+  // 1. Definitioner av alla läsvänliga texter
+  const uint8_t hp1[] = {0x76, 0x77, 0x50, 0x50, 0x6e, 0x00, 0x73, 0x5c, 0x07, 0x07, 0x79, 0x50, 0x00, 0x04, 0x6d, 0x00, 0x76, 0x79, 0x50, 0x79, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp2[] = {0x50, 0x5c, 0x54, 0x00, 0x38, 0x04, 0x70, 0x79, 0x6d, 0x00, 0x73, 0x04, 0x79, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp3[] = {0x6d, 0x79, 0x79, 0x00, 0x07, 0x76, 0x79, 0x00, 0x3d, 0x5c, 0x38, 0x5e, 0x00, 0x6d, 0x54, 0x04, 0x07, 0x39, 0x76, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp4[] = {0x5e, 0x5c, 0x00, 0x54, 0x5c, 0x07, 0x00, 0x3d, 0x5c, 0x00, 0x07, 0x5c, 0x00, 0x6d, 0x38, 0x79, 0x79, 0x73, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp5[] = {0x73, 0x1c, 0x50, 0x79, 0x00, 0x54, 0x77, 0x3d, 0x04, 0x39, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp6[] = {0x07, 0x76, 0x79, 0x00, 0x5e, 0x77, 0x50, 0x70, 0x00, 0x38, 0x5c, 0x50, 0x5e, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp7[] = {0x38, 0x5c, 0x1c, 0x04, 0x6d, 0x00, 0x04, 0x6d, 0x00, 0x77, 0x00, 0x76, 0x79, 0x50, 0x5c, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp8[] = {0x77, 0x50, 0x1c, 0x04, 0x5e, 0x00, 0x04, 0x6d, 0x00, 0x77, 0x00, 0x76, 0x79, 0x50, 0x5c, 0x00, 0x00, 0x00, 0x00};
+  const uint8_t hp9[] = {0x76, 0x5c, 0x3d, 0x1c, 0x77, 0x50, 0x07, 0x6d, 0x00, 0x04, 0x6d, 0x00, 0x7c, 0x79, 0x6d, 0x07, 0x00, 0x00, 0x00, 0x00};
+
+  // 2. Slumpa fram vilken mening som ska visas
+  int choice = random(0, 9);
+  const uint8_t* currentText;
+  int textLen;
+
+  switch(choice) {
+    case 0: currentText = hp1; textLen = sizeof(hp1); break;
+    case 1: currentText = hp2; textLen = sizeof(hp2); break;
+    case 2: currentText = hp3; textLen = sizeof(hp3); break;
+    case 3: currentText = hp4; textLen = sizeof(hp4); break;
+    case 4: currentText = hp5; textLen = sizeof(hp5); break;
+    case 5: currentText = hp6; textLen = sizeof(hp6); break;
+    case 6: currentText = hp7; textLen = sizeof(hp7); break;
+    case 7: currentText = hp8; textLen = sizeof(hp8); break;
+    case 8: currentText = hp9; textLen = sizeof(hp9); break;
+  }
+
+  // 3. Melodin
+  int melody[] = {
+    REST, NOTE_D4, NOTE_G4, NOTE_AS4, NOTE_A4, NOTE_G4, NOTE_D5, NOTE_C5, NOTE_A4,
+    NOTE_G4, NOTE_AS4, NOTE_A4, NOTE_F4, NOTE_GS4, NOTE_D4, NOTE_D4, NOTE_G4, 
+    NOTE_AS4, NOTE_A4, NOTE_G4, NOTE_D5, NOTE_F5, NOTE_E5, NOTE_DS5, NOTE_B4, 
+    NOTE_DS5, NOTE_D5, NOTE_CS5, NOTE_CS4, NOTE_B4, NOTE_G4, NOTE_AS4, NOTE_D5, 
+    NOTE_AS4, NOTE_D5, NOTE_AS4, NOTE_DS5, NOTE_D5, NOTE_CS5, NOTE_A4, NOTE_AS4, 
+    NOTE_D5, NOTE_CS5, NOTE_CS4, NOTE_D4, NOTE_D5, REST, NOTE_AS4, NOTE_D5, 
+    NOTE_AS4, NOTE_D5, NOTE_AS4, NOTE_F5, NOTE_E5, NOTE_DS5, NOTE_B4, NOTE_DS5, 
+    NOTE_D5, NOTE_CS5, NOTE_CS4, NOTE_AS4, NOTE_G4
+  };
+
+  int durations[] = {
+    2, 4, 4, 8, 4, 2, 4, 2, 2, 4, 8, 4, 2, 4, 1, 4, 4, 8, 4, 2, 4, 2, 4, 2, 4, 
+    4, 8, 4, 2, 4, 1, 4, 2, 4, 2, 4, 2, 4, 2, 4, 4, 8, 4, 2, 4, 1, 4, 4, 2, 4, 
+    2, 4, 2, 4, 2, 4, 4, 8, 4, 2, 4, 1
+  };
+
+  int numNotes = sizeof(durations) / sizeof(int);
+  int textStep = 0;
+
+  // Vänta tills knappen släpps
+  while(digitalRead(buttonPins[0]) == LOW) delay(10);
+
+  // 4. Spela melodin och rulla texten
+  for (int note = 0; note < numNotes; note++) {
+    // Avbryt om man trycker på röd knapp igen
+    if (digitalRead(buttonPins[0]) == LOW) break;
+
+    int duration = 900 / durations[note];
+    
+    // Visa texten (loopar automatiskt inom den valda meningen)
+    display.setSegments(currentText + textStep);
+    textStep++;
+    if (textStep >= textLen - 3) textStep = 0;
+
+    // Ljuslogik: Röd knapp blinkar, stjärnorna glittrar magiskt
+    turnOffAllLEDs();
+    digitalWrite(ledButtonArray[0], HIGH); 
+    if (note % 4 == 0) digitalWrite(ledStarsArray[random(6)], HIGH);
+    
+    tone(piezoPin, melody[note], duration * 0.8);
+    delay(duration * 0.7);
+    
+    // Släck för tydligare blink mellan toner
+    turnOffAllLEDs();
+    delay(duration * 0.4); 
+    noTone(piezoPin);
+  }
+
+  turnOffAllLEDs();
+  display.showNumberDec(highScore);
 }
