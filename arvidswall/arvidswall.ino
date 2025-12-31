@@ -1,3 +1,33 @@
+/*Todo: 
+Put Harry Potter Melody on blue button. 
+HP only plays while button is held down. 
+
+Implement difficulty levels. 
+
+Håll nere knappen i 3 sekunder
+Alla tre knappar börjar blinka pulserande, en svårighet väljs per knapp - NOOB, HARD, HACKER. Tryck på en knapp och då är det den som gäller fram till att man håller nere knappen 
+i 3 sekunder igen. 
+
+NOOB
+*Rulla NOOB SELECTED
+*Spela ett glättigt ljud samtidigt
+*Display eget highscore för EASY
+*Justera timelimit till 8 sek
+
+HARD
+*Rulla HARD SELECTED
+*Spela en trudelutt samtidigt
+*Display eget highscore för NORMAL
+*Justera timelimit till 6 sek
+
+HACKER
+*Rulla HACKER MODE SELECTED
+*Spela domedagsljud
+*Display eget highscore för HARD
+*Justera timelimit till 3 sek
+
+*/
+
 #include "pitches.h"
 #include <EEPROM.h>
 #include <TM1637Display.h>
