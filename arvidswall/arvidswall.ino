@@ -2,12 +2,12 @@
 #include <EEPROM.h>
 #include <TM1637Display.h>
 
-// --- PIN-KONFIGURATION ---
+// --- PIN-CONFIG ---
 const int ledButtonArray[] = {A4, A5, 9};
 const int ledStarsArray[] = {3, 5, 6, A3, 10, 11};
 const int ledEightArray[] = {3, 5, 6, 7, 8, A3, 10, 11};
 const int ledAllArray[] = {3, 5, 6, 7, 8, A3, 10, 11, A4, A5, 9};
-const int buttonPins[] = {4, 0, 13}; // Röd=0, Blå=1, Vit=2
+const int buttonPins[] = {4, 0, 13}; // RED=0, BLUE=1, WHITE=2
 const int piezoPin = A0;
 
 byte lightSensor = A1;
@@ -18,7 +18,7 @@ byte switchPin = 2;
 
 TM1637Display display = TM1637Display(CLK, DIO);
 
-// --- GLOBALA VARIABLER & INSTÄLLNINGAR ---
+// --- GLOBAL VARIABLES & SETTINGS---
 int currentStreak = 0;
 int activeLED = -1;
 int previousActiveLED = -1;
@@ -34,24 +34,24 @@ unsigned long blueButtonPressStart = 0;
 bool isPressingBlue = false;
 unsigned long redButtonPressStart = 0;
 bool isPressingRed = false;
-int moveHistory[5] = {-1, -1, -1, -1, -1}; // Sparar de senaste 5 knapp-indexen
+int moveHistory[5] = {-1, -1, -1, -1, -1}; 
 int historyIndex = 0;
 
-// Svårighetsgrader
+// DIFFICULTIES
 int difficulty = 0; 
-unsigned long currentTimeLimit = 8000;
+unsigned long currentTimeLimit;
 int highScores[] = {0, 0, 0}; 
 
 int tempo = 240;
 int wholenote = (60000 * 4) / tempo;
 
-// --- SEGMENT-TEXTER ---
+// --- SEGMENT-TEXTS ---
 const uint8_t allON[] = {0xff, 0xff, 0xff, 0xff};
 const uint8_t godJulText[] = { 0x00, 0x00, 0x00, 0x00, 0x3d, 0x5c, 0x5e, 0x00, 0x1e, 0x1c, 0x38, 0x00, 0x00, 0x38, 0x5c, 0x1c, 0x04, 0x6d, 0x00, 0x00, 0x5c, 0x58, 0x74, 0x00, 0x00, 0x77, 0x50, 0x1c, 0x04, 0x5e, 0x00, 0x00, 0x00, 0x00 };
 const uint8_t getReadyText[] = { 0x00, 0x00, 0x00, 0x00, 0x3d, 0x79, 0x07, 0x00, 0x50, 0x79, 0x77, 0x5e, 0x6e, 0x00, 0x00, 0x00, 0x00, 0x00 };
 const uint8_t gameOverText[] = { 0x00, 0x00, 0x00, 0x00, 0x3d, 0x77, 0x37, 0x79, 0x00, 0x3f, 0x1c, 0x79, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-// --- MELODIER ---
+// --- MUSIC ---
 int jingleMelody[] = { NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_G5, NOTE_C5, NOTE_D5, NOTE_E5, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_F5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_E5, NOTE_D5, NOTE_D5, NOTE_E5, NOTE_D5, NOTE_G5 };
 int jingleDurations[] = { 8, 8, 4, 8, 8, 4, 8, 8, 8, 8, 2, 8, 8, 8, 8, 8, 8, 8, 8, 16, 8, 8, 8, 8, 4, 4 };
 int jingleNotes = sizeof(jingleMelody) / sizeof(jingleMelody[0]);
@@ -67,7 +67,7 @@ int marioNotes = sizeof(marioMelody) / sizeof(marioMelody[0]) / 2;
 int gameOverNotes = sizeof(gameOverMelody) / sizeof(gameOverMelody[0]) / 2;
 int victoriousMelodyNotes = sizeof(victoriousMelody) / sizeof(victoriousMelody[0])/2;
 
-// --- HJÄLPFUNKTIONER ---
+// --- HELP FUNCTIONS ---
 
 void turnOffAllLEDs() { for (int i = 0; i < 11; i++) digitalWrite(ledAllArray[i], LOW); }
 
@@ -96,11 +96,11 @@ void playSuperMarioMelody() {
   int noteIndex = 0;
   int textStep = 0;
   int totalNotes = marioNotes * 2; 
-  int totalFrames = sizeof(getReadyText) - 3; // Hur många steg vi kan ta innan texten tar slut
+  int totalFrames = sizeof(getReadyText) - 3; // How many steps beofre text run out
 
   while (noteIndex < totalNotes) {
     int dur = 150;
-    // Spela nästa ton
+    // PLAY NEXT NOTE
     if (noteIndex < totalNotes) {
       int div = marioMelody[noteIndex + 1];
       dur = (div > 0) ? (wholenote / div) : (wholenote / abs(div) * 1.5);
@@ -108,7 +108,7 @@ void playSuperMarioMelody() {
       noteIndex += 2;
     }
 
-    // Visa texten, men använd % för att börja om från början om texten tar slut
+    // Show text, use % to restart scroll if text runs out
     display.setSegments(getReadyText + (textStep % totalFrames)); 
     textStep++; 
 
@@ -155,7 +155,7 @@ void pickNextLED() {
   do { randomIndex = random(3); } while (randomIndex == previousActiveLED);
   turnOffAllLEDs();
   activeLED = randomIndex;
-  // Spara det nya valet i historiken (skiftar ut det äldsta)
+  // SAVES NEW CHOICE 
   for(int i = 0; i < 4; i++) moveHistory[i] = moveHistory[i+1];
   moveHistory[4] = activeLED;
 
@@ -180,7 +180,7 @@ void triggerCoinBonanza() {
   int iterations = random(6, 11); 
   int bonanzaButton = buttonPins[activeLED]; 
   int bonanzaLED = ledButtonArray[activeLED]; 
-  unsigned long bonanzaTimeLimit = 1200; // 1.2 sekunder på sig per peng
+  unsigned long bonanzaTimeLimit = 1200; // 1.2 seconds per coin
   
   // 1. START-HINT
   display.setSegments(allON); 
@@ -194,7 +194,7 @@ void triggerCoinBonanza() {
     unsigned long bonanzaStart = millis();
     bool hit = false;
     
-    // 2. VÄNTA PÅ TRYCK ELLER TIMEOUT
+    // 2. WAIT FOR HIT OR TIME LIMIT
     while(millis() - bonanzaStart < bonanzaTimeLimit) {
       if(digitalRead(bonanzaButton) == LOW) {
         hit = true;
@@ -203,7 +203,7 @@ void triggerCoinBonanza() {
     }
 
     if (hit) {
-      // COIN-LJUD VID TRÄFF
+      // COIN-SOUND WHEN BUTTON GETS HIT
       tone(piezoPin, NOTE_B5, 100); delay(100);
       tone(piezoPin, NOTE_E6, 500);
       
@@ -212,22 +212,22 @@ void triggerCoinBonanza() {
       digitalWrite(bonanzaLED, LOW); 
       
       while(digitalRead(bonanzaButton) == LOW) delay(5);
-      delay(150); // Lite snabbare tempo mellan pengarna
+      delay(150); //A LITTLE TIME BETWEEN COINS
       noTone(piezoPin); 
     } 
     else {
-      // MISSADE EN PENG I BONANZAN
+      // MISSED COIN IN BONANZA
       digitalWrite(bonanzaLED, LOW);
-      playBeep(200); // Ett lite "ledset" ljud för att man missade bonusen
+      playBeep(200); // SAD SOUND FOR MISSING BONUS
       delay(300);
-      break; // Avbryt hela Bonanzan och gå tillbaka till vanliga spelet
+      break; // EXIT COIN BONANZA AND RETURN TO NORMAL GAME MODE
     }
   }
   
   display.clear(); 
   display.showNumberDec(currentStreak); 
   delay(300);
-  startTime = millis(); // Nollställ speltimern så man inte dör direkt när man kommer ut ur Bonanzan
+  startTime = millis(); // GAME TIMER RESET SO PLAYER WONT DIE COMING OUT FROM THE BONANZA
 }
 
 void handleOneUp() {
@@ -235,14 +235,14 @@ void handleOneUp() {
   if (lives < 3) lives++;
 }
 
-// --- NY FUNKTION: TURBO REACTOR BONUS ---
+// --- FUNCION: TURBO REACTOR BONUS ROUND---
 void triggerTurboReactor() {
   turnOffAllLEDs();
   display.clear();
   uint8_t turboText[] = {0x78, 0x1c, 0x50, 0x5c}; // "tUrb"
   display.setSegments(turboText);
 
-  // Siren och varningsljus
+  // SIREN AND WARNING LIGHTS
   for(int i=0; i<6; i++) {
     for(int j=0; j<6; j++) { 
       digitalWrite(ledStarsArray[j], HIGH);
@@ -253,7 +253,7 @@ void triggerTurboReactor() {
   }
 
   int reactorHits = 0;
-  float speedFactor = 2000; // Starttid i millisekunder
+  float speedFactor = 2000; // START TIME IN MS
 
   while(reactorHits < 10) {
     int r = random(3);
@@ -274,17 +274,18 @@ void triggerTurboReactor() {
       reactorHits++;
       tone(piezoPin, 1000 + (reactorHits * 100), 100);
       digitalWrite(ledButtonArray[r], LOW);
-      speedFactor *= 0.85; // Blir 15% snabbare för varje träff!
+      speedFactor *= 0.85; // 15% FASTER FOR EVERY HIT
+    
       delay(150);
     } else {
-      // Miss - avbryt bonus (men inget förlorat liv)
+      // Miss - EXIT BONUS, NO LIFE LOST
       tone(piezoPin, 150, 500);
       delay(500);
       return;
     }
   }
 
-  // Vinst!
+  // VICTORY!
   currentStreak += 15;
   display.showNumberDec(currentStreak);
   for(int i=0; i<5; i++) {
@@ -296,19 +297,19 @@ void triggerTurboReactor() {
   startTime = millis();
 }
 
-// --- UPPDATERAD TRAPPSTEGS-LOGIK ---
+// HANDLES CORRECT HIT
 void handleCorrectHit() {
   tone(piezoPin, NOTE_C6, 40); 
   currentStreak++;
   display.showNumberDec(currentStreak);
 
-  // Var 30:e poäng slumpar vi nu mellan Memory och Turbo
+  // ECERY 30TH POINT, RANDOM BONUS ROUND START, MEMORY OR TURBO
   if (currentStreak > 0 && currentStreak % 30 == 0) {
     if(random(0, 2) == 0) triggerMemoryBonus();
     else triggerTurboReactor();
   } 
 
-  //7 % chans för CoinBonanza
+  //7 % CHANCE FOR COIN BONANZA
   else if (random(0, 100) < 7) {
     triggerCoinBonanza();
   }
@@ -417,7 +418,7 @@ void runInterstellarMode() {
 }
 
 void selectDifficulty() {
-  // 1. Vänta tills spelaren har släppt vita knappen helt
+  // 1. WHAT UNTIL THE WHITE BUTTON IS RELEASED
   while(digitalRead(buttonPins[2]) == LOW) {
     delay(10); 
   }
@@ -429,16 +430,16 @@ void selectDifficulty() {
   delay(200); 
 
   while(selecting) {
-    // 2. BLINK-LOGIK (10 gånger i sekunden)
+    // 2. BLINK (10 TIMES / S)
     bool blinkState = (millis() / 100) % 2; 
     
     for(int i=0; i<3; i++) {
       digitalWrite(ledButtonArray[i], blinkState ? HIGH : LOW);
     }
 
-    // 3. LYSSNA PÅ VAL (Ny ordning enligt önskemål)
-    
-    // VIT KNAPP (buttonPins[2]) = NOOB
+    // 3. LISTEN FOR CHOICE
+
+    // WHITE BUTTON (buttonPins[2]) = NOOB
     if (digitalRead(buttonPins[2]) == LOW) { 
       difficulty = 0; 
       currentTimeLimit = 8000;
@@ -446,7 +447,7 @@ void selectDifficulty() {
       playBeep(440);
       selecting = false;
     }
-    // RÖD KNAPP (buttonPins[0]) = HARD
+    // RED BUTTON (buttonPins[0]) = HARD
     else if (digitalRead(buttonPins[0]) == LOW) { 
       difficulty = 1; 
       currentTimeLimit = 3000;
@@ -454,7 +455,7 @@ void selectDifficulty() {
       playBeep(660);
       selecting = false;
     }
-    // BLÅ KNAPP (buttonPins[1]) = HACKER (Interstellar-knappen)
+    // BLUE BUTTON (buttonPins[1]) = HACKER
     else if (digitalRead(buttonPins[1]) == LOW) { 
       difficulty = 2; 
       currentTimeLimit = 1500;
@@ -468,14 +469,14 @@ void selectDifficulty() {
   turnOffAllLEDs();
   display.showNumberDec(highScores[difficulty]);
   
-  // 1. Vänta tills ALLA knappar är släppta
+  // 1. WAIT UNTIL ALL BUTTONS ARE RELEASED
   while(digitalRead(buttonPins[0]) == LOW || digitalRead(buttonPins[1]) == LOW || digitalRead(buttonPins[2]) == LOW) {
     delay(10);
   }
 
-  // 2. RENSA TIDTAGNINGEN (Detta tar bort 2:an!)
-  isPressingWhite = false;
-  whiteButtonPressStart = millis(); // Sätt starttiden till NU istället för förr
+  // 2. CLEAN TIMER
+    isPressingWhite = false;
+  whiteButtonPressStart = millis(); // STARTING TIME
   
   delay(500);
 }
@@ -524,7 +525,7 @@ void setup() {
   display.setBrightness(5);
   display.showNumberDec(highScores[difficulty]);
 
-  delay(500); // Vänta en halvsekund så Pin 13 hinner lugna ner sig
+  delay(500); 
   isPressingWhite = false;
   whiteButtonPressStart = 0;
   display.showNumberDec(highScores[difficulty]);
@@ -535,24 +536,24 @@ void setup() {
 void loop() {
   lightSensorValue = analogRead(lightSensor);
 
-  // 1. Stjärneffekt i mörker
+  // 1. STARS EFFECT DURING DARKNESS, WHEN IT IS TIME FOR SLEEP AND NOT GAME PLAY
   if (lightSensorValue > 300 && !gameInProgress) {
     pulsatingStarsEffect(3, 5, 6, A3, 10, 11, 5000, 255);
     return;
   }
 
-  // 2. Potentiometer-musik
+  // 2. POTENTIOMETER-MUSIC
   if (digitalRead(switchPin) == LOW && !gameInProgress) {
     potentiometerMusic();
     return;
   }
 
-  // 3. MENY-LÄGE (Om spelet inte körs)
+  // 3. MENU (IF AN ACTIVE GAME IS NOT RUNNING)
   if (!gameInProgress) {
     int pulseValue = (sin(millis() * 0.003) * 127) + 128; 
     analogWrite(9, pulseValue); 
 
-    // BLÅ KNAPP
+    // BLUE BUTTON
     if (digitalRead(buttonPins[1]) == LOW) {
       if (!isPressingBlue) { blueButtonPressStart = millis(); isPressingBlue = true; } 
       unsigned long elapsed = millis() - blueButtonPressStart;
@@ -563,7 +564,7 @@ void loop() {
       display.showNumberDec(highScores[difficulty]); 
     }
 
-    // RÖD KNAPP
+    // RED BUTTON
     if (digitalRead(buttonPins[0]) == LOW) {
       if (!isPressingRed) { redButtonPressStart = millis(); isPressingRed = true; } 
       unsigned long elapsed = millis() - redButtonPressStart;
@@ -574,7 +575,7 @@ void loop() {
       display.showNumberDec(highScores[difficulty]); 
     }
 
-    // VIT KNAPP
+    // WHITE BUTTON
     if (digitalRead(buttonPins[2]) == LOW) {
       if (!isPressingWhite) { whiteButtonPressStart = millis(); isPressingWhite = true; } 
       unsigned long elapsed = millis() - whiteButtonPressStart;
@@ -598,7 +599,7 @@ void loop() {
       }
     }
   } 
-  // 4. SPEL-LÄGE (Om gameInProgress == true)
+  // 4. GAME MODE (IF GAME IS IN PROGRESS == true)
   else {
     unsigned long elapsed = millis() - startTime;
     if (elapsed >= currentTimeLimit) { 
@@ -622,14 +623,14 @@ void triggerMemoryBonus() {
   turnOffAllLEDs();
   display.clear();
   
-  // 1. STARTA MED MORSE-KOD
+  // 1. START WITH MORSE-CODE
   playMorseMemory();
   
   uint8_t memText[] = {0x37, 0x79, 0x54, 0x5c}; // "nEno"
   display.setSegments(memText);
   delay(500);
 
-  // 2. VISA SEKVENSRN
+  // 2. SHOW SEGMENT
   for (int i = 0; i < 5; i++) {
     digitalWrite(ledButtonArray[moveHistory[i]], HIGH);
     tone(piezoPin, 440 + (moveHistory[i] * 100), 200);
@@ -638,7 +639,7 @@ void triggerMemoryBonus() {
     delay(100);
   }
 
-  // 3. VÄNTA PÅ SVAR + JAWS-TEMA
+  // 3. WAIT FOR ANSWER, PLAY jAWS-THEME
   unsigned long bonusStart = millis();
   int correctAnswers = 0;
   display.showNumberDec(20);
@@ -646,11 +647,11 @@ void triggerMemoryBonus() {
   while (millis() - bonusStart < 10000) { 
     unsigned long elapsed = millis() - bonusStart;
     
-    // JAWS-LOGIK: Spela "Du-dum" med ökande hastighet
-    // Vi använder modulo för att skapa en puls
-    int jawsSpeed = map(elapsed, 0, 10000, 800, 200); // Går snabbare och snabbare
+    // JAWS-LOGIC: PLAY "Du-dum" WITH INCREASING SPEED
+    
+    int jawsSpeed = map(elapsed, 0, 10000, 800, 200); // FASTER AND FASTER
     if (elapsed % jawsSpeed < 50) {
-      tone(piezoPin, (elapsed % (jawsSpeed*2) < jawsSpeed) ? 165 : 175, 100); // Växlar mellan E och F
+      tone(piezoPin, (elapsed % (jawsSpeed*2) < jawsSpeed) ? 165 : 175, 100); // INTERCHANGING E AND F
     }
 
     for (int i = 0; i < 3; i++) {
@@ -678,14 +679,14 @@ void triggerMemoryBonus() {
       }
     }
   }
-  handleMiss(); // Tiden ute
+  handleMiss(); // TIMES UP!
 }
 
 
 void playMorseMemory() {
-  // Morse för "MEMORY": -- . -- --- .-. -.--
-  // Vi förenklar det till korta och långa pip
-  int pattern[] = {1,1, 0, 0, 1,1, 0,0,0, 1,0,1, 0,1,1,0,1,1}; // 1=lång, 0=kort
+  // Morse FOR "MEMORY": -- . -- --- .-. -.--
+
+  int pattern[] = {1,1, 0, 0, 1,1, 0,0,0, 1,0,1, 0,1,1,0,1,1}; // 1=LONG, 0=SHORT
   for(int i=0; i<18; i++) {
     int duration = (pattern[i] == 1) ? 300 : 100;
     tone(piezoPin, 600, duration);
@@ -694,12 +695,12 @@ void playMorseMemory() {
 }
 
 void playBonusWinFanfare() {
-  // En snabb, stigande fanfar
+  
   int notes[] = {NOTE_C5, NOTE_E5, NOTE_G5, NOTE_C6, NOTE_G5, NOTE_C6};
   int durations[] = {100, 100, 100, 300, 100, 500};
   
   for (int i = 0; i < 6; i++) {
-    // Tänd alla lampor i takt med sista tonen
+    // TURN ON LIGHTS AT THE LAST TONE
     if (i == 3) {
       for(int j = 0; j < 11; j++) digitalWrite(ledAllArray[j], HIGH);
     }
