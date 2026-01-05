@@ -88,5 +88,3 @@ Welcome to the **Interactive Climbing Wall Game**! This project transforms a sta
 * **Audio Feedback:** Listen closely! The faster the "ticking" sound, the less time you have left!
 
 ---
-
-du att jag gör något mer?** Jag kan till exempel lägga till en sektion för "Future Improvements" om du har planer på att bygga ut väggen ännu mer senare!
