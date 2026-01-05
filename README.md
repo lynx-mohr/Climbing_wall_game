@@ -1,89 +1,64 @@
-# Climbing Wall Game
+🧗‍♂️ Interactive Climbing Wall Game (v2.0)
+This is an advanced, Arduino-based reaction game designed specifically for climbing walls. The game challenges the climber through physical activity, speed, and memory training using integrated RGB buttons, sound effects, and interactive bonus rounds.
 
-**Tinker, Brewer, Maker, Scout**
+✨ Features
+Three Difficulty Levels:
 
-A fun interactive Arduino game inspired by classic reaction and timing games, featuring LEDs, buttons, and music. Perfect for makers who love electronics, games, and a bit of challenge!
+NOOB: Generous timing for beginners.
 
----
+HARD: Requires quick movements and agility on the wall.
 
-## **Hardware Required**
+HACKER: Extreme tempo for elite climbers.
 
-* **Arduino Uno**
-* **Piezo Buzzer** (for melodies and beeps)
-* **LEDs**
-* **LED-arcade-buttons
+Dynamic Bonus Rounds (Triggered every 30 points):
 
-  * Button LEDs (`ledButtonArray`)
-  * Star LEDs (`ledStarsArray`)
-  * Wall LEDs (`ledEightArray`)
-* **Buttons** (`buttonPins`)
-* **Light Sensor** (`A1`)
-* **Potentiometer** (`A2`)
-* **Switch** (`D2`)
+Memory Bonus: A sequence is displayed—the climber must repeat it under time pressure (accompanied by the "Jaws" theme!).
 
----
+Turbo Reactor: A speed test where the climber must "stop a reactor" by hitting buttons in rapidly increasing succession.
 
-## **Game Description**
+Coin Bonanza: A random bonus event that lets the player collect "coins" (extra points) in a high-speed arcade style.
 
-1. **Start the Game**
+Atmosphere & Easter Eggs:
 
-   * Press any button to start.
-   * A random LED lights up — this is the target button.
-   * The **Super Mario melody** plays at the start.
+Iconic Soundtracks: Built-in melodies from Super Mario, Harry Potter, and Interstellar.
 
-2. **Play the Game**
+Christmas Mode: "Jingle Bells" with a scrolling "GOD JUL" (Merry Christmas) text.
 
-   * Press the correct button before time runs out (6 seconds).
+Starry Night: An automatic light show activated via a Light Dependent Resistor (LDR) when the room goes dark.
 
-   * Correct button:
+Permanent Highscores: Uses Arduino EEPROM to save records for each difficulty level even after power-off.
 
-     * LED turns off
-     * Piezo buzzer beeps with increasing pitch
-     * Score streak increases
-     * Next LED lights up randomly
+🛠 Hardware Requirements
+Microcontroller: Arduino Uno (or compatible).
 
-   * Wrong button or timeout:
+Display: TM1637 4-digit 7-segment display.
 
-     * Game over sequence triggered
-     * **Game Over melody** plays
-     * LEDs flash to signal failure
+Inputs: 3x Arcade buttons with built-in LEDs.
 
-3. **High Score**
+Audio: 1x Piezo buzzer.
 
-   * If you beat the previous high score:
+Sensors: LDR (Light sensor), Potentiometer (for music mode), Toggle Switch.
 
-     * EEPROM saves the new high score
-     * **Victorious melody** plays
+LEDs: Extra LED strips or diodes for "Star" effects.
 
-4. **Special Features**
+🚀 Installation & Setup
+Install the TM1637Display library via the Arduino Library Manager.
 
-   * **Light Sensor Effect**: If it's dark, star LEDs pulsate for visual effect.
-   * **Potentiometer Music**: Hold the switch to play tones with the potentiometer and see LED feedback.
+Ensure the pitches.h file is in the same directory as the .ino sketch.
 
----
+Wire the hardware according to the pin configuration in the code:
 
-## **Melodies**
+Buttons: Pins 4, 0, 13.
 
-* **Super Mario Theme** → starts the game
-* **Game Over Melody** → triggered on losing
-* **Victorious Melody** → plays on high score
+Display: CLK Pin 1, DIO Pin 12.
 
----
+Buzzer: Pin A0.
 
-## **EEPROM Saving**
+🕹 How to Play
+Select Difficulty: Hold the White Button for 4 seconds (a countdown will appear). Select your level: White (Noob), Red (Hard), or Blue (Hacker).
 
-High scores are saved in EEPROM so they persist even after powering off the Arduino.
+Start Game: Tap the White Button once to begin.
 
----
+The Climb: Hit the button that lights up before the time runs out. The higher your streak, the faster the "ticking" sound becomes!
 
-## **Notes**
-
-* The game is perfect for makers who enjoy combining electronics, music, and gameplay.
-* LEDs provide visual feedback, piezo buzzer provides audio feedback, and buttons test your reaction skills.
-* Potentiometer and light sensor add extra interactivity for creative experiments.
-
----
-
-If you want, I can also **make a shorter, punchy “one-paragraph version”** for the top of your GitHub README that immediately grabs attention — perfect for visitors who just glance at the repo.
-
-Do you want me to do that too?
+Special Modes: From the menu, hold the Red or Blue button to play the Harry Potter or Interstellar themes.
